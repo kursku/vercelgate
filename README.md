@@ -11,7 +11,7 @@ vercelgate offers a practical solution by enabling users to switch between multi
 ## Installation
 
 ```go
-go install github.com/khanakia/vercelgate@main
+go install github.com/kursku/vercelgate@main
 ```
 
 ### Install with Homebrew:

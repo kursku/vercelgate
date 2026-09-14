@@ -7,10 +7,10 @@ import (
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/khanakia/vercelgate/gen/ent"
-	"github.com/khanakia/vercelgate/gen/ent/predicate"
-	"github.com/khanakia/vercelgate/gen/ent/team"
-	"github.com/khanakia/vercelgate/gen/ent/user"
+	"github.com/kursku/vercelgate/gen/ent"
+	"github.com/kursku/vercelgate/gen/ent/predicate"
+	"github.com/kursku/vercelgate/gen/ent/team"
+	"github.com/kursku/vercelgate/gen/ent/user"
 )
 
 // The Query interface represents an operation that queries a graph.

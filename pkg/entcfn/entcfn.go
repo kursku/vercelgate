@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/khanakia/vercelgate/gen/ent/migrate"
-	"github.com/khanakia/vercelgate/pkg/entdb"
+	"github.com/kursku/vercelgate/gen/ent/migrate"
+	"github.com/kursku/vercelgate/pkg/entdb"
 )
 
 func Migrate() error {

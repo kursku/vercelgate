@@ -7,8 +7,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/khanakia/vercelgate/pkg/jsonupdate"
-	"github.com/khanakia/vercelgate/pkg/utils"
+	"github.com/kursku/vercelgate/pkg/jsonupdate"
+	"github.com/kursku/vercelgate/pkg/utils"
 
 	"github.com/adrg/xdg"
 )

@@ -3,9 +3,9 @@ package vercelfn
 import (
 	"context"
 
-	"github.com/khanakia/vercelgate/pkg/entdb"
-	"github.com/khanakia/vercelgate/pkg/vercelapi"
-	"github.com/khanakia/vercelgate/pkg/vercelutil"
+	"github.com/kursku/vercelgate/pkg/entdb"
+	"github.com/kursku/vercelgate/pkg/vercelapi"
+	"github.com/kursku/vercelgate/pkg/vercelutil"
 )
 
 // Sycn user and team to database from auth.json file

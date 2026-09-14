@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/khanakia/vercelgate/gen/ent"
-	"github.com/khanakia/vercelgate/pkg/vercelutil"
+	"github.com/kursku/vercelgate/gen/ent"
+	"github.com/kursku/vercelgate/pkg/vercelutil"
 )
 
 var client *ent.Client

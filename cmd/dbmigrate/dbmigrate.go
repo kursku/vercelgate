@@ -4,8 +4,8 @@ import (
 	"context"
 	"log"
 
-	"github.com/khanakia/vercelgate/gen/ent"
-	"github.com/khanakia/vercelgate/gen/ent/migrate"
+	"github.com/kursku/vercelgate/gen/ent"
+	"github.com/kursku/vercelgate/gen/ent/migrate"
 
 	_ "github.com/mattn/go-sqlite3"
 )

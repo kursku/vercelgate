@@ -8,8 +8,8 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/khanakia/vercelgate/gen/ent/team"
-	"github.com/khanakia/vercelgate/gen/ent/user"
+	"github.com/kursku/vercelgate/gen/ent/team"
+	"github.com/kursku/vercelgate/gen/ent/user"
 )
 
 // Team is the model entity for the Team schema.

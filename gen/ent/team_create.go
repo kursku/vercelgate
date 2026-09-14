@@ -11,8 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
-	"github.com/khanakia/vercelgate/gen/ent/team"
-	"github.com/khanakia/vercelgate/gen/ent/user"
+	"github.com/kursku/vercelgate/gen/ent/team"
+	"github.com/kursku/vercelgate/gen/ent/user"
 )
 
 // TeamCreate is the builder for creating a Team entity.

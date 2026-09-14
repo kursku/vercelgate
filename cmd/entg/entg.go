@@ -22,7 +22,7 @@ func main() {
 	err = entc.Generate("./schema",
 		&gen.Config{
 			Target:  "./gen/ent",
-			Package: "github.com/khanakia/vercelgate/gen/ent",
+			Package: "github.com/kursku/vercelgate/gen/ent",
 		},
 		opts...,
 	)

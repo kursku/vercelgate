@@ -8,7 +8,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
-	"github.com/khanakia/vercelgate/gen/ent/user"
+	"github.com/kursku/vercelgate/gen/ent/user"
 )
 
 // User is the model entity for the User schema.

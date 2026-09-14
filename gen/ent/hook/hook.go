@@ -6,7 +6,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/khanakia/vercelgate/gen/ent"
+	"github.com/kursku/vercelgate/gen/ent"
 )
 
 // The TeamFunc type is an adapter to allow the use of ordinary
