@@ -100,9 +100,18 @@ Clears the current Vercel account configuration. After running this, you can add
 
 ```bash
 vercelgate switch
+vercelgate switch <name|email|username>   # non-interactive
 ```
 
-Displays a list of all synced Vercel accounts, allowing you to choose which account to set as active.
+Displays a list of all synced Vercel accounts, allowing you to choose which account to set as active. Pass a name, email, or username to switch without the interactive prompt (matches exactly first, then by substring; errors on an ambiguous match). Useful for scripting/wrappers.
+
+### List Accounts
+
+```bash
+vercelgate accounts
+```
+
+Prints all synced accounts and their teams as JSON (`id`, `name`, `username`, `email`, `teams[]` with `id`/`name`/`slug`). No tokens are included. Handy for mapping a project's `.vercel/project.json` `orgId` to the owning account/team.
 
 ### Switch Team
 

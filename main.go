@@ -2,10 +2,12 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/kursku/vercelgate/gen/ent"
 	"github.com/kursku/vercelgate/gen/ent/team"
@@ -32,6 +34,7 @@ func main() {
 	rootCmd.AddCommand(switchCmd)
 	rootCmd.AddCommand(switchTeamCmd)
 	rootCmd.AddCommand(pathCmd)
+	rootCmd.AddCommand(accountsCmd)
 
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
@@ -77,10 +80,10 @@ var initCmd = &cobra.Command{
 }
 
 var switchCmd = &cobra.Command{
-	Use:   "switch",
-	Short: "Switch between account",
+	Use:   "switch [account]",
+	Short: "Switch between account. Pass a name/email/username to switch non-interactively.",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := SwitchCmd(false)
+		err := SwitchCmd(false, args)
 
 		if err != nil {
 			log.Fatal(err)
@@ -91,10 +94,10 @@ var switchCmd = &cobra.Command{
 }
 
 var switchTeamCmd = &cobra.Command{
-	Use:   "switchteam",
+	Use:   "switchteam [account]",
 	Short: "Switch between account and teams",
 	Run: func(cmd *cobra.Command, args []string) {
-		err := SwitchCmd(true)
+		err := SwitchCmd(true, args)
 
 		if err != nil {
 			log.Fatal(err)
@@ -104,8 +107,14 @@ var switchTeamCmd = &cobra.Command{
 	},
 }
 
-func SwitchCmd(switchTeam bool) error {
-	user, err := promptGetUser()
+func SwitchCmd(switchTeam bool, args []string) error {
+	var user *ent.User
+	var err error
+	if len(args) > 0 {
+		user, err = findUser(args[0])
+	} else {
+		user, err = promptGetUser()
+	}
 	if err != nil {
 		return err
 	}
@@ -115,7 +124,11 @@ func SwitchCmd(switchTeam bool) error {
 		return err
 	}
 
-	fmt.Printf("Switched to user %s\n", user.Name)
+	displayName := user.Name
+	if len(displayName) == 0 {
+		displayName = user.Username
+	}
+	fmt.Printf("Switched to user %s\n", displayName)
 
 	if switchTeam {
 		team, err := promptGetTeam(user.ID)
@@ -163,6 +176,37 @@ func promptGetTeam(userID string) (*ent.Team, error) {
 	}
 
 	return items[index], nil
+}
+
+func findUser(q string) (*ent.User, error) {
+	ctx := context.Background()
+
+	users, err := entdb.Client().User.Query().All(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	ql := strings.ToLower(q)
+	var matches []*ent.User
+	for _, u := range users {
+		if strings.ToLower(u.Name) == ql || strings.ToLower(u.Email) == ql || strings.ToLower(u.Username) == ql {
+			return u, nil
+		}
+		if strings.Contains(strings.ToLower(u.Name), ql) ||
+			strings.Contains(strings.ToLower(u.Email), ql) ||
+			strings.Contains(strings.ToLower(u.Username), ql) {
+			matches = append(matches, u)
+		}
+	}
+
+	switch len(matches) {
+	case 1:
+		return matches[0], nil
+	case 0:
+		return nil, fmt.Errorf("no account matches %q", q)
+	default:
+		return nil, fmt.Errorf("multiple accounts match %q; be more specific", q)
+	}
 }
 
 func promptGetUser() (*ent.User, error) {
@@ -265,9 +309,62 @@ func NewAccountCmd() error {
 	}
 
 	err = os.Remove(filePath)
-	if err != nil {
+	if err != nil && !os.IsNotExist(err) {
 		return fmt.Errorf("failed to remove auth.json file: %w", err)
 	}
+	return nil
+}
+
+var accountsCmd = &cobra.Command{
+	Use:   "accounts",
+	Short: "List synced accounts and their teams as JSON (no tokens)",
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := ListAccounts(); err != nil {
+			log.Fatal(err)
+			return
+		}
+	},
+}
+
+func ListAccounts() error {
+	ctx := context.Background()
+
+	users, err := entdb.Client().User.Query().All(ctx)
+	if err != nil {
+		return err
+	}
+
+	type teamOut struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+		Slug string `json:"slug"`
+	}
+	type userOut struct {
+		ID       string    `json:"id"`
+		Name     string    `json:"name"`
+		Username string    `json:"username"`
+		Email    string    `json:"email"`
+		Teams    []teamOut `json:"teams"`
+	}
+
+	out := []userOut{}
+	for _, u := range users {
+		teams, err := entdb.Client().Team.Query().Where(team.UserID(u.ID)).All(ctx)
+		if err != nil {
+			return err
+		}
+		to := []teamOut{}
+		for _, t := range teams {
+			to = append(to, teamOut{ID: t.ID, Name: t.Name, Slug: t.Slug})
+		}
+		out = append(out, userOut{ID: u.ID, Name: u.Name, Username: u.Username, Email: u.Email, Teams: to})
+	}
+
+	b, err := json.MarshalIndent(out, "", "  ")
+	if err != nil {
+		return err
+	}
+	fmt.Println(string(b))
 	return nil
 }
 
