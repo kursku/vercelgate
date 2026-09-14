@@ -34,6 +34,18 @@ Make sure you create a Symlink: `mkdir -p ~/.config/com.vercel.cli && ln -s ~/.l
 > [!IMPORTANT]  
 > Make sure you first login with `vercel login` with any default email account so all the necessary configs gets created by vercel cli tool before using vercelgate
 
+> [!IMPORTANT]
+> **Vercel CLI >= 52 stores the auth token in the OS keyring by default, not in a file.** vercelgate reads and rewrites the token from `auth.json`, so it only works when the Vercel CLI keeps credentials in a file. Force file storage before logging in:
+>
+> ```bash
+> # requires Vercel CLI >= 59.16 (adds the configurable token storage)
+> export VERCEL_TOKEN_STORAGE=file   # Windows (PowerShell): setx VERCEL_TOKEN_STORAGE file
+> vercel logout
+> vercel login
+> ```
+>
+> With file storage the token lives in plaintext in the Vercel CLI data dir (e.g. `%APPDATA%\com.vercel.cli\Data\auth.json` on Windows). This is the trade-off for keyring-free switching.
+
 
 To begin using **vercelgate**, first perform the initialization:
 

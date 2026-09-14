@@ -126,22 +126,38 @@ func ConfigJsonFile() (string, error) {
 	return filepath.Join(globalPath, "config.json"), nil
 }
 
+func fileExists(p string) bool {
+	info, err := os.Stat(p)
+	return err == nil && !info.IsDir()
+}
+
 func GetGlobalPathConfig() (string, error) {
 	dirname := "com.vercel.cli"
 
-	dirs := append(xdg.ConfigDirs, xdg.ConfigHome)
+	bases := append([]string{}, xdg.ConfigDirs...)
+	bases = append(bases, xdg.ConfigHome)
+	bases = append(bases, xdg.DataDirs...)
+	bases = append(bases, xdg.DataHome)
 
-	for _, datadir := range dirs {
+	// vercel CLI (xdg-app-paths) stores config.json/auth.json under a "Data"
+	// subdir on Windows, so probe that before the bare app dir.
+	var candidates []string
+	for _, base := range bases {
+		root := filepath.Join(base, dirname)
+		candidates = append(candidates, filepath.Join(root, "Data"), root)
+	}
 
-		dirPath := filepath.Join(datadir, dirname)
-		// fmt.Println(dirPath)
-		info, err := os.Stat(dirPath)
-		if err != nil {
-			continue
+	// prefer a dir that actually holds the vercel config/auth files
+	for _, c := range candidates {
+		if fileExists(filepath.Join(c, "config.json")) || fileExists(filepath.Join(c, authJsonFileName)) {
+			return c, nil
 		}
+	}
 
-		if info.IsDir() {
-			return dirPath, nil
+	// fallback: first existing directory
+	for _, c := range candidates {
+		if info, err := os.Stat(c); err == nil && info.IsDir() {
+			return c, nil
 		}
 	}
 
